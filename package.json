@@ -1,0 +1,34 @@
+{
+  "name": "open-strat",
+  "version": "1.0.0",
+  "description": "open-strat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "client-build-dev": "webpack --mode development ./client/index.js --output ./client-dist/app.js",
+    "client-build-prod": "webpack --mode production ./client/index.js --output ./client-dist/app.js",
+    "client-devserver": "webpack-dev-server --mode development ./client/index.js --output ./client-dist/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LiakosC/open-strat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LiakosC/open-strat/issues"
+  },
+  "homepage": "https://github.com/LiakosC/open-strat#readme",
+  "dependencies": {
+    "esm": "^3.2.25",
+    "jquery": "^3.4.1",
+    "phaser": "^3.21.0"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^5.1.1",
+    "webpack": "^4.41.4",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.1"
+  }
+}
