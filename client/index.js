@@ -2,7 +2,7 @@
 window.$ = require('jquery');
 import { App } from "./App";
 
-let app = new App();
+var app = new App();
 
 /** @type {App} */
 window.app = app;
