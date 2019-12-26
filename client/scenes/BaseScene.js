@@ -1,10 +1,20 @@
 
 import { Scene } from "phaser";
+import { App } from "../App";
 
 export class BaseScene extends Scene {
 
     constructor() {
         super();
+    }
+
+    /**
+     * @returns {App}
+     */
+    app() {return window.app;}
+
+    stop() {
+
     }
 
 };

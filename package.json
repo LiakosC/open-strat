@@ -25,6 +25,7 @@
     "esm": "^3.2.25",
     "express": "^4.17.1",
     "jquery": "^3.4.1",
+    "jquery-ui-dist": "^1.12.1",
     "phaser": "^3.21.0",
     "socket.io": "^2.3.0"
   },
