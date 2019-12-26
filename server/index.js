@@ -11,11 +11,11 @@ expressApp.get('/', (req, res) => {
 });
 
 expressApp.post('/', (req, res) => {
-    
+
 });
 
 httpServer.listen(config.port, () => {
-    console.log("Server!", config.port);    
+    console.log("Server!", config.port);
 });
 
 ioServer.on('connection', (socket) => {
