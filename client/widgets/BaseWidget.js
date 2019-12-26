@@ -7,12 +7,14 @@ export class BaseWidget {
         /** @type {JQuery} */
         this.element = null;
 
-
-
     }
 
     /** @returns {App} */
     app() {return window.app;}
+
+    IsDisplayed() {
+        return this.element.is(':visible');
+    }
 
     /**
      * @virtual

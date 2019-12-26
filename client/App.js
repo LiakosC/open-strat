@@ -71,6 +71,8 @@ export class App {
     ScaleX() {return this.flexWindow.scaleX.get();}
     ScaleY() {return this.flexWindow.scaleY.get();}
 
+    homeUrl() {return this.config.host + ':' + this.config.port + '/';}
+
     Init() {
         this.phgame.scene.start(BaseScene.SCENE_main);
     }
