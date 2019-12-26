@@ -8,13 +8,12 @@ export class LoginScreenWidget extends BaseWidget {
 
     Create() {
         this.element = $('<div>').prop('id', 'login-screen').addClass('wallpaper').append(
-            $('<div>').css({
-                width: "50%",
-                margin: "20% auto",
-                padding: "3%",
-                backgroundColor: "red",
-            }).append(
-                $('<h2>').css({textAligh: "center"}).html("Login")
+            $('<div>').addClass('form').append(
+                $('<h2>').html("Login")
+            ).append(
+                $('<input>')
+            ).append(
+                $('<span>').addClass('msg').html("msg")
             )
         );
     }

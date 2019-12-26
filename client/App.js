@@ -2,6 +2,7 @@ import FlexibleWindow from "./FlexibleWindow";
 import { MainScene } from "./scenes/MainScene";
 import { GameScene } from "./scenes/GameScene";
 import { BaseScene } from "./scenes/BaseScene";
+import CssClassComposer from "./CssClassComposer";
 const config = require('../common/config.js');
 
 export class App {
@@ -24,6 +25,8 @@ export class App {
 
         // Config.
         this.config = config;
+
+        this.cssclass = new CssClassComposer();
 
         //this.canvasbox = $('<div>').prop('id', 'canvasbox').appendTo(this.flexWindow.element);
         //this.htmlbox = $('<div>').prop('id', 'htmlbox').appendTo(this.flexWindow.element);
