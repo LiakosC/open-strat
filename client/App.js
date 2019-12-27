@@ -1,3 +1,5 @@
+
+import io from 'socket.io-client';
 import FlexibleWindow from "./FlexibleWindow";
 import { MainScene } from "./scenes/MainScene";
 import { GameScene } from "./scenes/GameScene";
@@ -44,6 +46,43 @@ export class App {
 
         this.phgame.scene.add(BaseScene.SCENE_main, this.scene_main);
         this.phgame.scene.add(BaseScene.SCENE_game, this.scene_game);
+
+        /** @type {SocketIOClient.Socket} */
+        this.socket = null;
+
+    }
+
+    /**
+     * Connects and handshakes with the server.
+     * If already connected, disconnects first.
+     * @param {String} username 
+     */
+    ServerConnect(username) {
+
+        if (this.socket !== null) {
+            if (this.socket.connected) this.socket.disconnect();
+        }
+
+        this.socket = io.connect(this.config.host + ':' + this.config.port, {
+            autoConnect: false,
+            query: "username=" + username,
+        });
+
+        this.socket.emit('login', {name: "aaa"});
+        this.socket.connect();
+
+        this.socket.on('connect', (x) => {
+            console.log('Connected', x);
+        });
+        this.socket.on('event', (data) => {
+            console.log('event', data);
+        });
+        this.socket.on('error', (x) => {
+            console.log('error', x);
+        });
+        this.socket.on('disconnect', () => {
+            console.log('disconnect');
+        });
 
     }
 

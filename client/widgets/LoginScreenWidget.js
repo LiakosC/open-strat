@@ -41,12 +41,13 @@ export class LoginScreenWidget extends BaseWidget {
     }
 
     action_Connect(chosenName) {
-        this.msgLabel.html(this.app().homeUrl());
-        $.post('http://' + this.app().homeUrl() + 'login', {
-            name: chosenName,
-        }, (r) => {
-            this.msgLabel.html(r);
-        });
+        this.app().ServerConnect(chosenName);
+        //this.msgLabel.html(this.app().homeUrl());
+        //$.post('http://' + this.app().homeUrl() + 'login', {
+        //    name: chosenName,
+        //}, (r) => {
+        //    this.msgLabel.html(r);
+        //});
     }
 
 }
