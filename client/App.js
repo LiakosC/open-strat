@@ -77,6 +77,9 @@ export class App {
         this.socket.on('event', (data) => {
             console.log('event', data);
         });
+        this.socket.on('app-error', (x) => {
+            console.log('app-error', x);
+        });
         this.socket.on('error', (x) => {
             console.log('error', x);
         });

@@ -3,6 +3,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('../common/config.js');
+const User = require('./User');
 
 class App {
 
@@ -20,8 +21,10 @@ class App {
             next();
         });
 
-        /** @type {Object.<String, User>} */
-        this.users = {};
+        // Users dict. Init at least 1 User before re-emptying the dict to fix the intellisense.
+        this.users = {
+            'user.socket.id': new User(),
+        }; this.users = {};
 
     }
 
@@ -40,16 +43,30 @@ class App {
         */
 
         this.httpServer.listen(config.port, () => {
-            console.log("Server!", config.port);
+            console.log("Server Started @", config.port);
         });
 
+        // Server handshake.
         this.ioServer.use((socket, next) => {
             console.log("Query: ", socket.handshake.query);
-            //next(socket.handshake.query['username']);
+            if (socket.handshake.query['username'] == null) {
+                return next(new Error("Authentication error."));
+            }
+            let name = socket.handshake.query['username'];
+            if (name === '') {
+                return next(new Error("Username is empty."));
+            }
+            for (const [userID, user] of Object.entries(this.users)) {
+                if (user.name === name) {
+                    return next(new Error("Username " + name + " is taken."));
+                }
+            }
+            next();
         });
 
-        this.ioServer.on('connection', (socket, a, b) => {
-            console.log("User connected.", socket.id, a, b);
+        // Client events.
+        this.ioServer.on('connection', (socket) => {
+            console.log("User connected.", socket.id);
             socket.on('disconnect', () => {
                 console.log("User disconnected.", socket.id);
             });
