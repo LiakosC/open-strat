@@ -1,14 +1,16 @@
 
         
+const uniqid = require('uniqid');
 const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('../common/config.js');
 const User = require('./User');
+const World = require('./core/World');
 
 class App {
 
     constructor() {
-
+        this.uniqid = uniqid;
         this.expressApp = express();
         this.httpServer = require('http').createServer(this.expressApp);
         this.ioServer = require('socket.io')(this.httpServer);
@@ -21,13 +23,22 @@ class App {
             next();
         });
 
-        // Users dict. Init at least 1 User before re-emptying the dict to fix the intellisense.
-        this.users = {
-            'user.socket.id': new User(),
-        }; this.users = {};
+        /**
+         * Users dict.
+         * @type {Object<string, User>}
+         */
+        this.users = {};
 
+        /**
+         * Worlds dict.
+         * @type {Object<string, World>}}
+         */
+        this.worlds = {};
     }
 
+    /**
+     * Starts the application.
+     */
     Init() {
 
         /*
@@ -56,7 +67,7 @@ class App {
             if (name === '') {
                 return next(new Error("Username is empty."));
             }
-            for (const [userID, user] of Object.entries(this.users)) {
+            for (let [userID, user] of Object.entries(this.users)) {
                 if (user.name === name) {
                     return next(new Error("Username " + name + " is taken."));
                 }
@@ -66,22 +77,38 @@ class App {
 
         // Client events.
         this.ioServer.on('connection', (socket) => {
-            console.log("User connected.", socket.id);
+            console.log("User connected.", socket.id, socket.handshake.query['username']);
+            let user = new User(socket, socket.handshake.query['username']);
+            this.AddUser(user);
             socket.on('disconnect', () => {
                 console.log("User disconnected.", socket.id);
+                this.RemoveUser(user);
             });
         });
 
+        // Create worlds.
+        let w = new World();
+
     }
 
+    /**
+     * Adds a User into the app.
+     * @param {User} user 
+     */
     AddUser(user) {
-
+        this.users[user.id()] = user;
     }
 
+    /**
+     * Removes a User from the app.
+     * @param {User} user 
+     */
     RemoveUser(user) {
-
+        delete this.users[user.id()];
     }
 
 }
 
 module.exports = App;
+
+//export default App;
