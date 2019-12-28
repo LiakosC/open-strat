@@ -5,6 +5,7 @@ import { MainScene } from "./scenes/MainScene";
 import { GameScene } from "./scenes/GameScene";
 import { BaseScene } from "./scenes/BaseScene";
 import CssClassComposer from "./CssClassComposer";
+import { AssetsManager } from './AssetsManager';
 const config = require('../common/config.js');
 
 export class App {
@@ -13,6 +14,8 @@ export class App {
 
         this.width = 800;
         this.height = 600;
+
+        this.assets = new AssetsManager();
 
         // Create flexible window container.
         this.flexWindow = new FlexibleWindow(this.width, this.height);
@@ -116,7 +119,8 @@ export class App {
     homeUrl() {return this.config.host + ':' + this.config.port + '/';}
 
     Init() {
-        this.phgame.scene.start(BaseScene.SCENE_main);
+        //this.phgame.scene.start(BaseScene.SCENE_main);
+        this.phgame.scene.start(BaseScene.SCENE_game);
     }
 
 };
