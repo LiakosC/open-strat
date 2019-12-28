@@ -1,11 +1,11 @@
 
-import { Scene } from "phaser";
+//import { Scene } from "phaser";
 import { App } from "../App";
 
-export class BaseScene extends Scene {
+export class BaseScene {
 
     constructor() {
-        super();
+        //super();
     }
 
     /**

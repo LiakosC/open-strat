@@ -36,19 +36,19 @@ export class App {
         //this.canvasbox = $('<div>').prop('id', 'canvasbox').appendTo(this.flexWindow.element);
         //this.htmlbox = $('<div>').prop('id', 'htmlbox').appendTo(this.flexWindow.element);
 
-        this.phgame = new Phaser.Game({
-            //parent: this.canvasbox.get(0),
-            parent: this.flexWindow.element,
-            type: Phaser.AUTO,
-            width: this.width,
-            height: this.height,
-        });
+        //this.phgame = new Phaser.Game({
+        //    //parent: this.canvasbox.get(0),
+        //    parent: this.flexWindow.element,
+        //    type: Phaser.AUTO,
+        //    width: this.width,
+        //    height: this.height,
+        //});
 
         this.scene_main = new MainScene();
         this.scene_game = new GameScene();
 
-        this.phgame.scene.add(BaseScene.SCENE_main, this.scene_main);
-        this.phgame.scene.add(BaseScene.SCENE_game, this.scene_game);
+        //this.phgame.scene.add(BaseScene.SCENE_main, this.scene_main);
+        //this.phgame.scene.add(BaseScene.SCENE_game, this.scene_game);
 
         /** @type {SocketIOClient.Socket} */
         this.socket = null;
@@ -120,7 +120,8 @@ export class App {
 
     Init() {
         //this.phgame.scene.start(BaseScene.SCENE_main);
-        this.phgame.scene.start(BaseScene.SCENE_game);
+        //this.phgame.scene.start(BaseScene.SCENE_game);
+        this.scene_game.init();
     }
 
 };
