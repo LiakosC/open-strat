@@ -22,12 +22,26 @@ export class GameScene extends BaseScene {
         this.camera.lookAt(new Vector3(0,0,0));
         this.camera_velocity = new Vector3(1, 0);
 
-        let geometry = new THREE.BoxGeometry( 0.5, 0.5, 0.5 );
-        let material = new THREE.MeshNormalMaterial();
+        let material = new THREE.MeshNormalMaterial({});
+        let playerGeo = new THREE.BoxGeometry( 0.5, 0.5, 0.5 );
+        let groundGeo = new THREE.PlaneBufferGeometry(4, 4, 14, 14);
+        let groundTexture = THREE.ImageUtils.loadTexture(this.app().assets.graphics() + '/terrain/grass1.png');
+        groundTexture.wrapS = THREE.RepeatWrapping;
+        groundTexture.wrapT = THREE.RepeatWrapping;
+        groundTexture.repeat.set(4, 4);
+        let groundMaterial = new THREE.MeshLambertMaterial({map: groundTexture});
 
-        this.player = new THREE.Mesh( geometry, material );
+        this.ground = new THREE.Mesh(groundGeo, groundMaterial);
+        this.ground.material.side = THREE.DoubleSide;
+        this.thrScene.add(this.ground);
+
+        this.player = new THREE.Mesh( playerGeo, material );
         this.player.position.set(0, 0, 0);
         this.thrScene.add(this.player);
+
+        // Add light.
+        let light = new THREE.AmbientLight(0xFFFFFF, 1);
+        this.thrScene.add(light);
 
     }
 
@@ -35,12 +49,10 @@ export class GameScene extends BaseScene {
         if (ticks > 1) console.log("Lag happened. Ticks more than 1: ", ticks);
         this.app().thrRenderer.render( this.thrScene, this.camera );
         this.player.rotation.z += 3.14 * dt;
-        //console.log(this.camera.getWorldDirection());
-        console.log(this.camera_velocity);
+        console.log(this.camera.getWorldDirection());
+        //console.log(this.camera_velocity);
         if (this.camera.position.x > 2) this.camera_velocity.setX(-1);
         if (this.camera.position.x < -2) this.camera_velocity.setX(1);
-        //this.player.rotation.x += 3.14 * dt;
-        //this.player.rotation.y += 0.02;
         this.camera.position.x += this.camera_velocity.x * dt;
         //this.camera.position.y += this.camera_velocity.y * dt;
     }
