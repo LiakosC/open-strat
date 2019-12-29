@@ -1,6 +1,7 @@
 
         
 const uniqid = require('uniqid');
+const TimeManager = require('../common/time/TimeManager');
 const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('../common/config.js');
@@ -11,6 +12,7 @@ class App {
 
     constructor() {
         this.uniqid = uniqid;
+        this.time = new TimeManager();
         this.expressApp = express();
         this.httpServer = require('http').createServer(this.expressApp);
         this.ioServer = require('socket.io')(this.httpServer);

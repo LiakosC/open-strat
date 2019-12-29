@@ -1,20 +1,19 @@
 
-//import { Scene } from "phaser";
 import { App } from "../App";
 
 export class BaseScene {
 
+    /** @returns {App} */
+    app() {return window.app;}
+
     constructor() {
-        //super();
         /** @type {THREE.Scene} */
-        this.thrScene = null;
         this.thrScene = new THREE.Scene();
     }
 
-    /**
-     * @returns {App}
-     */
-    app() {return window.app;}
+    timeUpdate(dt, ticks) {
+        console.log("Overwrite `timeUpdate`: ", dt, ticks);
+    }
 
 };
 

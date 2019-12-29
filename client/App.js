@@ -7,6 +7,7 @@ import { BaseScene } from "./scenes/BaseScene";
 import CssClassComposer from "./CssClassComposer";
 import { AssetsManager } from './AssetsManager';
 global.THREE = require('three');
+const TimeManager = require('../common/time/TimeManager');
 //import * as THREE from 'three';
 const config = require('../common/config.js');
 
@@ -29,6 +30,9 @@ export class App {
             this.flexWindow.MaxStretch();
             this.flexWindow.Center();
         });
+
+        // Time manager.
+        this.time = new TimeManager();
 
         // Config.
         this.config = config;
@@ -53,6 +57,9 @@ export class App {
 
         this.scene_main = new MainScene();
         this.scene_game = new GameScene();
+
+        /** @type {BaseScene} */
+        this.currentScene = null;
 
         //this.phgame.scene.add(BaseScene.SCENE_main, this.scene_main);
         //this.phgame.scene.add(BaseScene.SCENE_game, this.scene_game);
@@ -128,7 +135,12 @@ export class App {
     Init() {
         //this.phgame.scene.start(BaseScene.SCENE_main);
         //this.phgame.scene.start(BaseScene.SCENE_game);
+        this.time.StartRuntime(1000/60, (dms, ticks) => {
+            if (this.currentScene === null) return;
+            this.currentScene.timeUpdate(dms, ticks);
+        });
         this.scene_game.init();
+        this.currentScene = this.scene_game;
     }
 
 };
