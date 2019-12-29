@@ -6,16 +6,15 @@ export class BaseScene {
 
     constructor() {
         //super();
+        /** @type {THREE.Scene} */
+        this.thrScene = null;
+        this.thrScene = new THREE.Scene();
     }
 
     /**
      * @returns {App}
      */
     app() {return window.app;}
-
-    stop() {
-
-    }
 
 };
 

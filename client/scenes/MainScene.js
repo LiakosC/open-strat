@@ -15,12 +15,4 @@ export class MainScene extends BaseScene {
         $(this.app().flexWindow.element).append(this.loginScreen.element);
     }
 
-    preload() {
-
-    }
-
-    create() {
-
-    }
-
 }

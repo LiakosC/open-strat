@@ -6,6 +6,8 @@ import { GameScene } from "./scenes/GameScene";
 import { BaseScene } from "./scenes/BaseScene";
 import CssClassComposer from "./CssClassComposer";
 import { AssetsManager } from './AssetsManager';
+global.THREE = require('three');
+//import * as THREE from 'three';
 const config = require('../common/config.js');
 
 export class App {
@@ -43,6 +45,11 @@ export class App {
         //    width: this.width,
         //    height: this.height,
         //});
+
+        this.thrRenderer = new THREE.WebGLRenderer({antialias: true});
+        this.thrRenderer.setSize(this.width, this.height);
+        $(this.thrRenderer.domElement).css({width: "100%", height: "100%"});
+        this.flexWindow.element.appendChild(this.thrRenderer.domElement);
 
         this.scene_main = new MainScene();
         this.scene_game = new GameScene();
