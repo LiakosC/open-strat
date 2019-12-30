@@ -2,6 +2,9 @@
 import { BaseScene } from "./BaseScene";
 import { LoginScreenWidget } from "../widgets/LoginScreenWidget";
 import { Vector3 } from "three";
+import { Hero } from "../core/Hero";
+import { Unit } from "../core/Unit";
+import { Entity } from "../core/Entity";
 
 export class GameScene extends BaseScene {
 
@@ -13,6 +16,9 @@ export class GameScene extends BaseScene {
         this.cameraAngle = Math.PI/6;
         this.screenScrollSpeed = 5;
         this.camera_velocity = new Vector3(0, 0);
+
+        /** @type {Object<string, Unit} */
+        this.units = {};
     }
 
     init() {
@@ -26,12 +32,9 @@ export class GameScene extends BaseScene {
 
         this.CreateWorld(8, 8);
 
-        let playerMaterial = new THREE.MeshNormalMaterial({});
-        let playerGeo = new THREE.BoxGeometry( 0.5, 0.5, 0.5 );
-
-        this.player = new THREE.Mesh( playerGeo, playerMaterial );
-        this.player.position.set(0, 0, 0);
-        this.thrScene.add(this.player);
+        this.hero = new Hero();
+        this.MoveEntity(this.hero, 2, 2);
+        this.units[this.hero.uniqid] = this.hero;
 
         // Add light.
         let light = new THREE.AmbientLight(0xFFFFFF, 1);
@@ -41,8 +44,11 @@ export class GameScene extends BaseScene {
 
     timeUpdate(dt, ticks) {
         if (ticks > 1) console.log("Lag happened. Ticks more than 1: ", ticks);
+        dt *= ticks;
         this.app().thrRenderer.render( this.thrScene, this.camera );
-        this.player.rotation.z += 3.14 * dt;
+        for (const [unitID, unit] of Object.entries(this.units)) {
+            unit.mesh.rotation.z += 3.14 * dt;
+        }
 
         // Hande screen scrolling.
         //console.log(this.camera_velocity, this.camera.position);
@@ -124,5 +130,33 @@ export class GameScene extends BaseScene {
         if ((delta > 0 && this.camera.position.z < 15) || (delta < 0 && this.camera.position.z > 3))
             this.SetCameraDistance(this.camera.position.z + zoomSpeed * delta);
     }
+
+    /**
+     * Adds a unit to the game dict.
+     * @param {Unit} unit 
+     * @deprecated
+     */
+    AddUnit(unit) {
+        this.units[unit.uniqid] = unit;
+    }
+
+    /**
+     * Move an entity instantly at a (x, y) point.
+     * Point.z is calculated based on the world ground level in that position.
+     * @param {Entity} entity 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @returns {GameScene}
+     */
+    MoveEntity(entity, x, y) {
+        let groundHeight = 0; // Ground height at (x, y).
+        entity.position.x = x;
+        entity.position.y = y;
+        entity.position.z = groundHeight + entity.height() / 2;
+        entity.mesh_position_refresh();
+        return this;
+    }
+
+
 
 }

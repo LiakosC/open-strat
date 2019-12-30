@@ -11,6 +11,7 @@ global.THREE = require('three');
 const TimeManager = require('../common/time/TimeManager');
 //import * as THREE from 'three';
 const config = require('../common/config.js');
+const uniqid = require('uniqid');
 
 export class App {
 
@@ -147,5 +148,8 @@ export class App {
         this.scene_game.init();
         this.currentScene = this.scene_game;
     }
+
+    /** @returns {String} */
+    uniqid() {return uniqid();}
 
 };
