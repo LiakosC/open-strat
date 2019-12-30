@@ -7,8 +7,12 @@ export class BaseScene {
     app() {return window.app;}
 
     constructor() {
+        
         /** @type {THREE.Scene} */
         this.thrScene = new THREE.Scene();
+
+        /** @type {THREE.PerspectiveCamera} */
+        this.camera = null;
     }
 
     timeUpdate(dt, ticks) {

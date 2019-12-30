@@ -6,6 +6,7 @@ import { GameScene } from "./scenes/GameScene";
 import { BaseScene } from "./scenes/BaseScene";
 import CssClassComposer from "./CssClassComposer";
 import { AssetsManager } from './AssetsManager';
+import { MouseScreenScroller } from './MouseScreenScroller';
 global.THREE = require('three');
 const TimeManager = require('../common/time/TimeManager');
 //import * as THREE from 'three';
@@ -31,12 +32,16 @@ export class App {
             this.flexWindow.Center();
         });
 
+        this.mouseScreenScroller = new MouseScreenScroller();
+        this.mouseScreenScroller.ListenElement($(this.flexWindow.element));
+
         // Time manager.
         this.time = new TimeManager();
 
         // Config.
         this.config = config;
 
+        // Css classes collection (composition).
         this.cssclass = new CssClassComposer();
 
         //this.canvasbox = $('<div>').prop('id', 'canvasbox').appendTo(this.flexWindow.element);
