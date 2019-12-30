@@ -1,5 +1,9 @@
+import { App } from "./App";
 
 export class MouseScreenScroller {
+
+    /** @returns {App} */
+    app() {return global.app;}
 
     constructor()  {
         this.deltaX = 0;

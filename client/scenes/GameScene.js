@@ -1,7 +1,7 @@
 
 import { BaseScene } from "./BaseScene";
 import { LoginScreenWidget } from "../widgets/LoginScreenWidget";
-import { Vector3 } from "three";
+import { Vector3, Vector2 } from "three";
 import { Hero } from "../core/Hero";
 import { Unit } from "../core/Unit";
 import { Entity } from "../core/Entity";
@@ -17,6 +17,9 @@ export class GameScene extends BaseScene {
         this.screenScrollSpeed = 5;
         this.camera_velocity = new Vector3(0, 0);
 
+        /** @type {THREE.Mesh} */
+        this.world_mesh = null;
+
         /** @type {Object<string, Unit} */
         this.units = {};
     }
@@ -27,18 +30,18 @@ export class GameScene extends BaseScene {
         $(this.app().flexWindow.element).append(this.loginScreen.element);
         this.loginScreen.element.toggle(false);
 
+        // Handle input.
+        this.CreateControls();
+
         // Setup camera.
         this.CreateCamera().SetCameraDistance(5).SetCameraPosition(0, 0);
 
+        // Create world boundary points with terrain.
         this.CreateWorld(8, 8);
 
         this.hero = new Hero();
         this.MoveEntity(this.hero, 2, 2);
         this.units[this.hero.uniqid] = this.hero;
-
-        // Add light.
-        let light = new THREE.AmbientLight(0xFFFFFF, 1);
-        this.thrScene.add(light);
 
     }
 
@@ -62,6 +65,26 @@ export class GameScene extends BaseScene {
     }
 
     /**
+     * Create input callbacks than call `action_*()` methods.
+     * @returns {GameScene}
+     */
+    CreateControls() {
+        document.addEventListener('click', (ev) => {
+            //console.log(ev, this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
+            let mousePosition = new Vector2(this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
+            this.raycaster.setFromCamera(mousePosition, this.camera);
+            let inter = this.raycaster.intersectObjects(this.thrScene.children, true);
+            if (inter.length > 0) {
+                //console.log(inter[0].point);
+                for (let i=0; i<inter.length; i++) {
+                    //inter[i].object.material.color.set( 0xff0000 );
+                }
+            }
+        });
+        return this;
+    }
+
+    /**
      * Create a WC world.
      * @param {Number} width 
      * @param {Number} height 
@@ -78,10 +101,14 @@ export class GameScene extends BaseScene {
         groundTexture.repeat.set(width * repeatThickness, height * repeatThickness);
         let groundMaterial = new THREE.MeshLambertMaterial({map: groundTexture}); 
 
-        this.ground = new THREE.Mesh(groundGeo, groundMaterial);
-        this.ground.material.side = THREE.DoubleSide;
+        this.world_mesh = new THREE.Mesh(groundGeo, groundMaterial);
+        this.world_mesh.material.side = THREE.DoubleSide;
 
-        this.thrScene.add(this.ground);
+        this.thrScene.add(this.world_mesh);
+
+        // Add light.
+        let light = new THREE.AmbientLight(0xFFFFFF, 1);
+        this.thrScene.add(light);
 
     }
 

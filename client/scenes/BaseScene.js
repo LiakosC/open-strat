@@ -7,6 +7,9 @@ export class BaseScene {
     app() {return window.app;}
 
     constructor() {
+
+        /** @type {THREE.Raycaster} */
+        this.raycaster = new THREE.Raycaster();
         
         /** @type {THREE.Scene} */
         this.thrScene = new THREE.Scene();
