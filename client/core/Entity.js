@@ -12,6 +12,12 @@ export class Entity {
 
         /** @type {THREE.Mesh} */
         this.meshGroup = null;
+
+        /**
+         * Holds all objects that listen to mouse input.
+         * @type {THREE.Object3D[]}
+         */
+        this.inputObjects = [];
     }
 
     /**
@@ -28,13 +34,14 @@ export class Entity {
     /**
      * Height of the current entity.
      * Used for position.z calculation relative to the ground.
-     * Overwrite this method.
+     * @virtual
      * @returns {Number}
      */
     height() {return 1;}
 
     /**
      * All entities should be circles.
+     * @virtual
      * @returns {Number}
      */
     radius() {return 1;}

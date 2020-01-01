@@ -40,8 +40,7 @@ export class GameScene extends BaseScene {
         this.CreateWorld(8, 8);
 
         this.hero = new Hero();
-        this.MoveEntity(this.hero, 2, 2);
-        this.units[this.hero.uniqid] = this.hero;
+        this.AddUnit(this.hero).MoveEntity(this.hero, 2, 2);
 
     }
 
@@ -50,7 +49,7 @@ export class GameScene extends BaseScene {
         dt *= ticks;
         this.app().thrRenderer.render( this.thrScene, this.camera );
         for (const [unitID, unit] of Object.entries(this.units)) {
-            unit.mesh.rotation.z += 3.14 * dt;
+            //unit.meshGroup.rotation.z += 3.14 * dt;
         }
 
         // Hande screen scrolling.
@@ -71,15 +70,13 @@ export class GameScene extends BaseScene {
     CreateControls() {
         document.addEventListener('click', (ev) => {
             //console.log(ev, this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
-            let mousePosition = new Vector2(this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
-            this.raycaster.setFromCamera(mousePosition, this.camera);
-            let inter = this.raycaster.intersectObjects(this.thrScene.children, true);
-            if (inter.length > 0) {
-                //console.log(inter[0].point);
-                for (let i=0; i<inter.length; i++) {
-                    //inter[i].object.material.color.set( 0xff0000 );
-                }
-            }
+            //this.mouseNdcPosition = new Vector2(this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
+            //console.log(this.MouseObjects());
+            console.log(this.MouseInputEntities());
+        });
+        document.addEventListener('mousemove', (ev) => {
+            //console.log(ev, this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
+            this.mouseNdcPosition = new Vector2(this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
         });
         return this;
     }
@@ -161,10 +158,28 @@ export class GameScene extends BaseScene {
     /**
      * Adds a unit to the game dict.
      * @param {Unit} unit 
-     * @deprecated
+     * @returns {GameScene}
      */
     AddUnit(unit) {
         this.units[unit.uniqid] = unit;
+        unit.inputObjects.forEach((object) => {
+            //console.log(object.id);
+            this.inputObjects[object.id] = unit;
+        });
+        return this;
+    }
+
+    /**
+     * Removes a unit from the game dict.
+     * @param {Unit} unit 
+     * @returns {GameScene}
+     */
+    RemoveUnit(unit) {
+        delete this.units[unit.uniqid];
+        unit.inputObjects.forEach((object) => {
+            delete this.inputObjects[object.id];
+        });
+        return this;
     }
 
     /**

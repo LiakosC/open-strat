@@ -14,6 +14,7 @@ export class Hero extends Unit {
 
         let base_mesh = new THREE.Mesh( playerGeo, mat );
         base_mesh.rotation.x = Math.PI / 2;
+        this.inputObjects.push(base_mesh);
 
         //this.submesh = new THREE.Mesh(playerGeo, mat);
         //this.submesh.position.set(1, 1, 0);
@@ -29,10 +30,11 @@ export class Hero extends Unit {
 
         this.meshGroup = new THREE.Group();
         this.meshGroup.add(base_mesh);
-        this.meshGroup.add(this.submesh);
+        //this.meshGroup.add(this.submesh);
         this.meshGroup.add(imageMesh);
         this.app().scene_game.thrScene.add(this.meshGroup);
         //this.app().scene_game.thrScene.add(this.mesh);
+        //console.log(this.rotation);
     }
 
     height() {return 0.2;}
