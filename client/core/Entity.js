@@ -11,7 +11,7 @@ export class Entity {
         this.position = new  Vector3(0, 0, 0); // Server true position.
 
         /** @type {THREE.Mesh} */
-        this.mesh = null;
+        this.meshGroup = null;
     }
 
     /**
@@ -21,7 +21,7 @@ export class Entity {
      */
     mesh_position_refresh() {
         let pos = this.position;
-        this.mesh.position.set(pos.x, pos.y, pos.z);
+        this.meshGroup.position.set(pos.x, pos.y, pos.z);
         return this;
     }
 
@@ -32,5 +32,11 @@ export class Entity {
      * @returns {Number}
      */
     height() {return 1;}
+
+    /**
+     * All entities should be circles.
+     * @returns {Number}
+     */
+    radius() {return 1;}
 
 }

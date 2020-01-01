@@ -51,6 +51,9 @@ export class App {
         $(this.thrRenderer.domElement).css({width: "100%", height: "100%"});
         this.flexWindow.element.appendChild(this.thrRenderer.domElement);
 
+        // Texture loader to load graphics textures.
+        this.textureLoader = new THREE.TextureLoader();
+
         // App sub modules.
         this.scene_main = new MainScene();
         this.scene_game = new GameScene();

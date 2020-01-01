@@ -4,7 +4,6 @@ export class Unit extends Entity {
 
     constructor() {
         super();
-        
     }
 
 }
