@@ -19,7 +19,7 @@ export class BaseScene {
         this.camera = null;
 
         /** @type {THREE.Vector2} */
-        this.mouseNdcPosition = null;// = new Vector2(this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
+        this.mouseNdcPosition = new THREE.Vector2(0, 0);// = new Vector2(this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
 
         /**
          * @type {Object<integer, Entity>} 
@@ -64,9 +64,11 @@ export class BaseScene {
     MouseInputEntities() {
         let objects = this.MouseInputObjects();
         let entities = [];
-        objects.forEach((obj) => {
-            if (this.inputObjects[obj.id]) entities.push(this.inputObjects[obj.id]);
-        });
+        if (objects.length > 0) {
+            objects.forEach((obj) => {
+                if (this.inputObjects[obj.id]) entities.push(this.inputObjects[obj.id]);
+            });
+        }
         return entities;
     }
 

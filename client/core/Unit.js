@@ -1,9 +1,14 @@
 import { Entity } from "./Entity";
+import { BaseScene } from "../scenes/BaseScene";
 
 export class Unit extends Entity {
 
-    constructor() {
-        super();
+    /**
+     * 
+     * @param {BaseScene} scene 
+     */
+    constructor(scene) {
+        super(scene);
     }
 
 }

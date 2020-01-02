@@ -39,7 +39,7 @@ export class GameScene extends BaseScene {
         // Create world boundary points with terrain.
         this.CreateWorld(8, 8);
 
-        this.hero = new Hero();
+        this.hero = new Hero(this);
         this.AddUnit(this.hero).MoveEntity(this.hero, 2, 2);
 
     }
@@ -51,6 +51,16 @@ export class GameScene extends BaseScene {
         for (const [unitID, unit] of Object.entries(this.units)) {
             //unit.meshGroup.rotation.z += 3.14 * dt;
         }
+
+        // Handle mouse hover.
+        let hoveredEntity = this.MouseInputEntities()[0];
+        if (hoveredEntity) {
+            this.app().cursorer.Pointer();
+        } else {
+            this.app().cursorer.Default();
+        }
+         
+        
 
         // Hande screen scrolling.
         //console.log(this.camera_velocity, this.camera.position);
@@ -72,7 +82,7 @@ export class GameScene extends BaseScene {
             //console.log(ev, this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
             //this.mouseNdcPosition = new Vector2(this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
             //console.log(this.MouseObjects());
-            console.log(this.MouseInputEntities());
+            this.action_ClickAnywhere(this.MouseInputEntities());
         });
         document.addEventListener('mousemove', (ev) => {
             //console.log(ev, this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
@@ -153,6 +163,19 @@ export class GameScene extends BaseScene {
         let zoomSpeed = 0.6;
         if ((delta > 0 && this.camera.position.z < 15) || (delta < 0 && this.camera.position.z > 3))
             this.SetCameraDistance(this.camera.position.z + zoomSpeed * delta);
+    }
+
+    /**
+     * 
+     * @param {Entity[]} entities 
+     */
+    action_ClickAnywhere(entities) {
+        let firstEntity = entities[0];
+        if (firstEntity) {
+            firstEntity.destroy();
+            this.RemoveUnit(firstEntity);
+        }
+        //this.MoveEntity(this.hero, this.m)
     }
 
     /**

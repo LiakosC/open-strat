@@ -7,6 +7,7 @@ import { BaseScene } from "./scenes/BaseScene";
 import CssClassComposer from "./CssClassComposer";
 import { AssetsManager } from './AssetsManager';
 import { MouseScreenScroller } from './MouseScreenScroller';
+import { CursorManager } from './CursorManager';
 global.THREE = require('three');
 const TimeManager = require('../common/time/TimeManager');
 //import * as THREE from 'three';
@@ -44,6 +45,9 @@ export class App {
 
         // Css classes collection (composition).
         this.cssclass = new CssClassComposer();
+
+        // Manager to change cursor style.//
+        this.cursorer = new  CursorManager();
 
         // Init THREE renderer (canvas).
         this.thrRenderer = new THREE.WebGLRenderer({antialias: true});

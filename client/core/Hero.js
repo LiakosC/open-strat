@@ -3,8 +3,8 @@ import { Unit } from "./Unit";
 
 export class Hero extends Unit {
 
-    constructor() {
-        super();
+    constructor(scene) {
+        super(scene);
 
         let mat = new THREE.MeshNormalMaterial();
         mat.color = new THREE.Color(0x00ff00);
@@ -32,7 +32,7 @@ export class Hero extends Unit {
         this.meshGroup.add(base_mesh);
         //this.meshGroup.add(this.submesh);
         this.meshGroup.add(imageMesh);
-        this.app().scene_game.thrScene.add(this.meshGroup);
+        this.scene.thrScene.add(this.meshGroup);
         //this.app().scene_game.thrScene.add(this.mesh);
         //console.log(this.rotation);
     }
