@@ -13,13 +13,20 @@ export class Entity {
      */
     constructor(scene) {
         this.uniqid = this.app().uniqid();
-        this.position = new  Vector3(0, 0, 0); // Server true position.
+        this.position = new Vector3(0, 0, 0); // Server true position.
 
         /** @type {BaseScene} */
         this.scene = scene;
 
-        /** @type {THREE.Mesh} */
-        this.meshGroup = null;
+        this.meshGroup = new THREE.Group();
+        this.rotationMeshGroup = new THREE.Group();
+        this.imageMesh = new THREE.Mesh();
+        this._imageExtraHeight = 0.02;
+
+        this.meshGroup.add(this.rotationMeshGroup);
+        this.rotationMeshGroup.add(this.imageMesh);
+
+        this.rotation = Math.PI / 2;
 
         /**
          * Holds all objects that listen to mouse input.
@@ -64,10 +71,11 @@ export class Entity {
     }
 
     set rotation(rads) {
-
+        this.rotationMeshGroup.rotation.z = rads;
     }
+
     get rotation() {
-        //return 2;
+        return this.rotationMeshGroup.rotation.z;
     }
 
 }

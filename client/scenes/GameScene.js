@@ -49,7 +49,7 @@ export class GameScene extends BaseScene {
         dt *= ticks;
         this.app().thrRenderer.render( this.thrScene, this.camera );
         for (const [unitID, unit] of Object.entries(this.units)) {
-            //unit.meshGroup.rotation.z += 3.14 * dt;
+            //unit.rotation += Math.PI * 2 * dt;
         }
 
         // Handle mouse hover.
@@ -98,7 +98,9 @@ export class GameScene extends BaseScene {
     action_MouseDown_right(inters) {
         inters.forEach((inter) => {
             if (inter.object === this.world_mesh) {
-                let targetPoint = inter.point;
+                let heroPoint = new THREE.Vector2(this.hero.position.x, this.hero.position.y);
+                let targetPoint = new THREE.Vector2(inter.point.x, inter.point.y);
+                this.hero.rotation = targetPoint.clone().sub(heroPoint).angle();
                 this.MoveEntity(this.hero, targetPoint.x, targetPoint.y);
             }
         });
