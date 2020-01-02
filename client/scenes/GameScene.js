@@ -1,7 +1,10 @@
 
 import { BaseScene } from "./BaseScene";
 import { LoginScreenWidget } from "../widgets/LoginScreenWidget";
-import { Vector3 } from "three";
+import { Vector3, Vector2 } from "three";
+import { Hero } from "../core/Hero";
+import { Unit } from "../core/Unit";
+import { Entity } from "../core/Entity";
 
 export class GameScene extends BaseScene {
 
@@ -13,6 +16,12 @@ export class GameScene extends BaseScene {
         this.cameraAngle = Math.PI/6;
         this.screenScrollSpeed = 5;
         this.camera_velocity = new Vector3(0, 0);
+
+        /** @type {THREE.Mesh} */
+        this.world_mesh = null;
+
+        /** @type {Object<string, Unit} */
+        this.units = {};
     }
 
     init() {
@@ -21,28 +30,37 @@ export class GameScene extends BaseScene {
         $(this.app().flexWindow.element).append(this.loginScreen.element);
         this.loginScreen.element.toggle(false);
 
+        // Handle input.
+        this.CreateControls();
+
         // Setup camera.
         this.CreateCamera().SetCameraDistance(5).SetCameraPosition(0, 0);
 
+        // Create world boundary points with terrain.
         this.CreateWorld(8, 8);
 
-        let playerMaterial = new THREE.MeshNormalMaterial({});
-        let playerGeo = new THREE.BoxGeometry( 0.5, 0.5, 0.5 );
-
-        this.player = new THREE.Mesh( playerGeo, playerMaterial );
-        this.player.position.set(0, 0, 0);
-        this.thrScene.add(this.player);
-
-        // Add light.
-        let light = new THREE.AmbientLight(0xFFFFFF, 1);
-        this.thrScene.add(light);
+        this.hero = new Hero(this);
+        this.AddUnit(this.hero).MoveEntity(this.hero, 2, 2);
 
     }
 
     timeUpdate(dt, ticks) {
         if (ticks > 1) console.log("Lag happened. Ticks more than 1: ", ticks);
+        dt *= ticks;
         this.app().thrRenderer.render( this.thrScene, this.camera );
-        this.player.rotation.z += 3.14 * dt;
+        for (const [unitID, unit] of Object.entries(this.units)) {
+            //unit.meshGroup.rotation.z += 3.14 * dt;
+        }
+
+        // Handle mouse hover.
+        let hoveredEntity = this.MouseInputEntities()[0];
+        if (hoveredEntity) {
+            this.app().cursorer.Pointer();
+        } else {
+            this.app().cursorer.Default();
+        }
+         
+        
 
         // Hande screen scrolling.
         //console.log(this.camera_velocity, this.camera.position);
@@ -53,6 +71,24 @@ export class GameScene extends BaseScene {
             this.camera.position.x += this.camera_velocity.x * dt;
         if (this.camera_velocity.y > 0 && cameraLookY < this.worldCorner_tl.y || this.camera_velocity.y < 0 && cameraLookY > this.worldCorner_br.y)
             this.camera.position.y += this.camera_velocity.y * dt;
+    }
+
+    /**
+     * Create input callbacks than call `action_*()` methods.
+     * @returns {GameScene}
+     */
+    CreateControls() {
+        document.addEventListener('click', (ev) => {
+            //console.log(ev, this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
+            //this.mouseNdcPosition = new Vector2(this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
+            //console.log(this.MouseObjects());
+            this.action_ClickAnywhere(this.MouseInputEntities());
+        });
+        document.addEventListener('mousemove', (ev) => {
+            //console.log(ev, this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
+            this.mouseNdcPosition = new Vector2(this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
+        });
+        return this;
     }
 
     /**
@@ -72,10 +108,14 @@ export class GameScene extends BaseScene {
         groundTexture.repeat.set(width * repeatThickness, height * repeatThickness);
         let groundMaterial = new THREE.MeshLambertMaterial({map: groundTexture}); 
 
-        this.ground = new THREE.Mesh(groundGeo, groundMaterial);
-        this.ground.material.side = THREE.DoubleSide;
+        this.world_mesh = new THREE.Mesh(groundGeo, groundMaterial);
+        this.world_mesh.material.side = THREE.DoubleSide;
 
-        this.thrScene.add(this.ground);
+        this.thrScene.add(this.world_mesh);
+
+        // Add light.
+        let light = new THREE.AmbientLight(0xFFFFFF, 1);
+        this.thrScene.add(light);
 
     }
 
@@ -124,5 +164,64 @@ export class GameScene extends BaseScene {
         if ((delta > 0 && this.camera.position.z < 15) || (delta < 0 && this.camera.position.z > 3))
             this.SetCameraDistance(this.camera.position.z + zoomSpeed * delta);
     }
+
+    /**
+     * 
+     * @param {Entity[]} entities 
+     */
+    action_ClickAnywhere(entities) {
+        let firstEntity = entities[0];
+        if (firstEntity) {
+            firstEntity.destroy();
+            this.RemoveUnit(firstEntity);
+        }
+        //this.MoveEntity(this.hero, this.m)
+    }
+
+    /**
+     * Adds a unit to the game dict.
+     * @param {Unit} unit 
+     * @returns {GameScene}
+     */
+    AddUnit(unit) {
+        this.units[unit.uniqid] = unit;
+        unit.inputObjects.forEach((object) => {
+            //console.log(object.id);
+            this.inputObjects[object.id] = unit;
+        });
+        return this;
+    }
+
+    /**
+     * Removes a unit from the game dict.
+     * @param {Unit} unit 
+     * @returns {GameScene}
+     */
+    RemoveUnit(unit) {
+        delete this.units[unit.uniqid];
+        unit.inputObjects.forEach((object) => {
+            delete this.inputObjects[object.id];
+        });
+        return this;
+    }
+
+    /**
+     * Move an entity instantly at a (x, y) point.
+     * Point.z is calculated based on the world ground level in that position.
+     * @param {Entity} entity 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @returns {GameScene}
+     */
+    MoveEntity(entity, x, y) {
+        let groundHeight = 0; // Ground height at (x, y).
+        entity.position.x = x;
+        entity.position.y = y;
+        entity.position.z = groundHeight + entity.height() / 2;
+        entity.mesh_position_refresh();
+        return this;
+    }
+
+
 
 }

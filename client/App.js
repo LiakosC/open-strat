@@ -7,10 +7,12 @@ import { BaseScene } from "./scenes/BaseScene";
 import CssClassComposer from "./CssClassComposer";
 import { AssetsManager } from './AssetsManager';
 import { MouseScreenScroller } from './MouseScreenScroller';
+import { CursorManager } from './CursorManager';
 global.THREE = require('three');
 const TimeManager = require('../common/time/TimeManager');
 //import * as THREE from 'three';
 const config = require('../common/config.js');
+const uniqid = require('uniqid');
 
 export class App {
 
@@ -44,30 +46,24 @@ export class App {
         // Css classes collection (composition).
         this.cssclass = new CssClassComposer();
 
-        //this.canvasbox = $('<div>').prop('id', 'canvasbox').appendTo(this.flexWindow.element);
-        //this.htmlbox = $('<div>').prop('id', 'htmlbox').appendTo(this.flexWindow.element);
+        // Manager to change cursor style.//
+        this.cursorer = new  CursorManager();
 
-        //this.phgame = new Phaser.Game({
-        //    //parent: this.canvasbox.get(0),
-        //    parent: this.flexWindow.element,
-        //    type: Phaser.AUTO,
-        //    width: this.width,
-        //    height: this.height,
-        //});
-
+        // Init THREE renderer (canvas).
         this.thrRenderer = new THREE.WebGLRenderer({antialias: true});
         this.thrRenderer.setSize(this.width, this.height);
         $(this.thrRenderer.domElement).css({width: "100%", height: "100%"});
         this.flexWindow.element.appendChild(this.thrRenderer.domElement);
 
+        // Texture loader to load graphics textures.
+        this.textureLoader = new THREE.TextureLoader();
+
+        // App sub modules.
         this.scene_main = new MainScene();
         this.scene_game = new GameScene();
 
         /** @type {BaseScene} */
         this.currentScene = null;
-
-        //this.phgame.scene.add(BaseScene.SCENE_main, this.scene_main);
-        //this.phgame.scene.add(BaseScene.SCENE_game, this.scene_game);
 
         /** @type {SocketIOClient.Socket} */
         this.socket = null;
@@ -135,17 +131,52 @@ export class App {
     ScaleX() {return this.flexWindow.scaleX.get();}
     ScaleY() {return this.flexWindow.scaleY.get();}
 
+    ScaledMouseX(eventClientX) {
+        let elRect = this.flexWindow.element.getBoundingClientRect();
+        return (eventClientX - elRect.left) / this.ScaleX();
+    }
+
+    ScaledMouseY(eventClientY) {
+        let elRect = this.flexWindow.element.getBoundingClientRect();
+        return (elRect.bottom - (eventClientY - elRect.top)) / this.ScaleY();
+    }
+
+    /**
+     * X normalized device coord.
+     * @param {Number} eventClientX 
+     * @returns {Number} [-1, +1]
+     */
+	MouseNdcX(eventClientX) {
+        let elRect = this.flexWindow.element.getBoundingClientRect();
+        let flexWindowX = eventClientX - elRect.left;
+	    return ( flexWindowX / this.flexWindow.current_W() ) * 2 - 1;
+    }
+    
+    /**
+     * Y normalized device coord.
+     * @param {Number} eventClientY
+     * @returns {Number} [-1, +1]
+     */
+    MouseNdcY(eventClientY) {
+        let elRect = this.flexWindow.element.getBoundingClientRect();
+        let flexWindowY = eventClientY - elRect.top;
+        return - ( flexWindowY / this.flexWindow.current_H() ) * 2 + 1;
+    }
+
     homeUrl() {return this.config.host + ':' + this.config.port + '/';}
 
     Init() {
-        //this.phgame.scene.start(BaseScene.SCENE_main);
-        //this.phgame.scene.start(BaseScene.SCENE_game);
+        window.oncontextmenu = (ev) => {ev.preventDefault();}; // Disable browser left-click behavior.
+
+        this.scene_game.init();
         this.time.StartRuntime(1000/60, (dms, ticks) => {
             if (this.currentScene === null) return;
             this.currentScene.timeUpdate(dms, ticks);
         });
-        this.scene_game.init();
         this.currentScene = this.scene_game;
     }
+
+    /** @returns {String} */
+    uniqid() {return uniqid();}
 
 };
