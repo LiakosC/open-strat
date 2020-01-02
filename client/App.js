@@ -168,12 +168,40 @@ export class App {
     Init() {
         window.oncontextmenu = (ev) => {ev.preventDefault();}; // Disable browser left-click behavior.
 
-        this.scene_game.init();
-        this.time.StartRuntime(1000/60, (dms, ticks) => {
-            if (this.currentScene === null) return;
-            this.currentScene.timeUpdate(dms, ticks);
+        // Pass needed mouse input to the current scene.
+        document.addEventListener('mousemove', (ev) => {
+            //console.log(ev, this, this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
+            if (this.currentScene) {
+                this.currentScene.mouseNdcPosition = new THREE.Vector2(this.MouseNdcX(ev.clientX), this.MouseNdcY(ev.clientY));
+            }
         });
-        this.currentScene = this.scene_game;
+
+        this.time.StartRuntime(1000/60, (dms, ticks) => {
+            this.TimeUpdate(dms, ticks);
+            if (this.currentScene) {
+                this.currentScene.timeUpdate(dms, ticks);
+            }
+        });
+
+        //this.SwichScene(this.scene_main);
+        this.SwichScene(this.scene_game);
+    }
+
+    TimeUpdate(dt, ticks) {
+        //console.log(dt, ticks);
+        if (ticks > 1) console.log("Lag happened. Ticks more than 1: ", ticks);
+    }
+
+    /**
+     * Stops the current scene and start the selected scene.
+     * @param {BaseScene} scene 
+     */
+    SwichScene(scene) {
+        if (this.currentScene != null)
+            this.currentScene.shutdown();
+        scene.shutdown();
+        scene.init();
+        this.currentScene = scene;
     }
 
     /** @returns {String} */

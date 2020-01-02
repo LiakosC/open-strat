@@ -10,9 +10,19 @@ export class MainScene extends BaseScene {
     }
 
     init() {
+        super.init();
         this.loginScreen.Create();
         //this.app().flexWindow.element.appendChild(this.loginScreen.element);
         $(this.app().flexWindow.element).append(this.loginScreen.element);
+    }
+
+    timeUpdate(dt, ticks) {
+
+    }
+
+    shutdown() {
+        if (this.loginScreen.element)
+            this.loginScreen.element.toggle(false);
     }
 
 }

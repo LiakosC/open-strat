@@ -25,6 +25,7 @@ export class GameScene extends BaseScene {
     }
 
     init() {
+        super.init();
         this.loginScreen.Create();
         //this.app().flexWindow.element.appendChild(this.loginScreen.element);
         $(this.app().flexWindow.element).append(this.loginScreen.element);
@@ -45,7 +46,6 @@ export class GameScene extends BaseScene {
     }
 
     timeUpdate(dt, ticks) {
-        if (ticks > 1) console.log("Lag happened. Ticks more than 1: ", ticks);
         dt *= ticks;
         this.app().thrRenderer.render( this.thrScene, this.camera );
         for (const [unitID, unit] of Object.entries(this.units)) {
@@ -73,6 +73,10 @@ export class GameScene extends BaseScene {
             this.camera.position.y += this.camera_velocity.y * dt;
     }
 
+    shutdown() {
+
+    }
+
     /**
      * Create input callbacks than call `action_*()` methods.
      * @returns {GameScene}
@@ -83,10 +87,6 @@ export class GameScene extends BaseScene {
             //this.mouseNdcPosition = new Vector2(this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
             //console.log(this.MouseObjects());
             this.action_ClickAnywhere(this.MouseInputEntities());
-        });
-        document.addEventListener('mousemove', (ev) => {
-            //console.log(ev, this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
-            this.mouseNdcPosition = new Vector2(this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
         });
         return this;
     }

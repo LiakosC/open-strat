@@ -29,6 +29,14 @@ export class BaseScene {
     }
 
     /**
+     * Only called at the very first time or after a shutdown().
+     * @virtual
+     */
+    init() {
+        console.log("Overwrite `init`.");
+    }
+
+    /**
      * Time-update logic.
      * @param {Number} dt Seconds (float).
      * @param {Number} ticks Integer >= 1
@@ -36,6 +44,23 @@ export class BaseScene {
      */
     timeUpdate(dt, ticks) {
         console.log("Overwrite `timeUpdate`: ", dt, ticks);
+    }
+
+    /**
+     * Scene stop (for switching to another scene) logic. 
+     * @virtual
+     */
+    shutdown() {
+        console.log("Overwrite `shutdown`");
+    }
+
+    /**
+     * Returns the intersections of the mouse position.
+     * @returns {THREE.Intersection[]}}
+     */
+    MouseInputInters() {
+        this.raycaster.setFromCamera(this.mouseNdcPosition, this.camera);
+        return this.raycaster.intersectObjects(this.thrScene.children, true);
     }
 
     /**
