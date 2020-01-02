@@ -91,7 +91,8 @@ export class BaseScene {
         let entities = [];
         if (objects.length > 0) {
             objects.forEach((obj) => {
-                if (this.inputObjects[obj.id]) entities.push(this.inputObjects[obj.id]);
+                if (this.inputObjects[obj.id])
+                    entities.push(this.inputObjects[obj.id]);
             });
         }
         return entities;

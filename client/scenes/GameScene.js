@@ -1,10 +1,10 @@
 
 import { BaseScene } from "./BaseScene";
 import { LoginScreenWidget } from "../widgets/LoginScreenWidget";
-import { Vector3, Vector2 } from "three";
-import { Hero } from "../core/Hero";
-import { Unit } from "../core/Unit";
+import { Vector3 } from "three";
 import { Entity } from "../core/Entity";
+import { Unit } from "../core/Unit";
+import { Hero } from "../core/Hero";
 
 export class GameScene extends BaseScene {
 
@@ -78,17 +78,52 @@ export class GameScene extends BaseScene {
     }
 
     /**
+     * Action when left clicking.
+     * @param {THREE.Intersection[]} inters
+     */
+    action_MouseDown_left(inters) {
+        let entities = this.MouseInputEntities();
+        let firstEntity = entities[0];
+        if (firstEntity) {
+            firstEntity.destroy();
+            this.RemoveUnit(firstEntity);
+        }
+        //this.MoveEntity(this.hero, this.m)
+    }
+
+    /**
+     * Action when right clicking.
+     * @param {THREE.Intersection[]} inters 
+     */
+    action_MouseDown_right(inters) {
+        inters.forEach((inter) => {
+            if (inter.object === this.world_mesh) {
+                let targetPoint = inter.point;
+                this.MoveEntity(this.hero, targetPoint.x, targetPoint.y);
+            }
+        });
+        //console.log(inters);
+    }
+
+    /**
      * Create input callbacks than call `action_*()` methods.
      * @returns {GameScene}
      */
     CreateControls() {
-        document.addEventListener('click', (ev) => {
-            //console.log(ev, this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
-            //this.mouseNdcPosition = new Vector2(this.app().MouseNdcX(ev.clientX), this.app().MouseNdcY(ev.clientY));
-            //console.log(this.MouseObjects());
-            this.action_ClickAnywhere(this.MouseInputEntities());
-        });
-        return this;
+        /** @param {MouseEvent} ev */
+        let onMouseDown = (ev) => {
+            //console.log(ev);
+            let inters = this.MouseInputInters();
+            if (ev.button === 0) { // Left click.
+                this.action_MouseDown_left(inters);
+            } else if (ev.button === 1) {
+                // Middle click.
+            } else if (ev.button === 2) { // Right click.
+                this.action_MouseDown_right(inters);
+            }
+        };
+        document.addEventListener('mousedown', onMouseDown);
+        //return this;
     }
 
     /**
@@ -109,7 +144,8 @@ export class GameScene extends BaseScene {
         let groundMaterial = new THREE.MeshLambertMaterial({map: groundTexture}); 
 
         this.world_mesh = new THREE.Mesh(groundGeo, groundMaterial);
-        this.world_mesh.material.side = THREE.DoubleSide;
+        //this.world_mesh.material.side = THREE.DoubleSide;
+        //this.world_mesh.name = 'terrain';
 
         this.thrScene.add(this.world_mesh);
 
@@ -163,19 +199,6 @@ export class GameScene extends BaseScene {
         let zoomSpeed = 0.6;
         if ((delta > 0 && this.camera.position.z < 15) || (delta < 0 && this.camera.position.z > 3))
             this.SetCameraDistance(this.camera.position.z + zoomSpeed * delta);
-    }
-
-    /**
-     * 
-     * @param {Entity[]} entities 
-     */
-    action_ClickAnywhere(entities) {
-        let firstEntity = entities[0];
-        if (firstEntity) {
-            firstEntity.destroy();
-            this.RemoveUnit(firstEntity);
-        }
-        //this.MoveEntity(this.hero, this.m)
     }
 
     /**
